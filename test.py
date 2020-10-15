@@ -9,8 +9,8 @@ username3 = 'yted91'
 password3 = 'imoutofpasswordnames'
 course = 'cloud_computing'
 assignment = 'assignment1'
-profUser = 'goggins'
-profPass = 'augurrox'
+profUser = 'saab'
+profPass = 'boomr345'
 
 #(1) Tests if the program can handle a successful login, pass
 def test_login(grading_system):
@@ -20,7 +20,7 @@ def test_login(grading_system):
     if grading_system.usr.password != '#yeet':
         assert False
 
-#(2) Tests if the program can handle a correct username, pass
+#(2) Tests if the program can handle a login, pass
 def test_check_password(grading_system):
     test = grading_system.check_password(username,password)
     test2 = grading_system.check_password(username,'#yeet')
@@ -36,7 +36,7 @@ def test_change_grade(grading_system):
     grading_system.usr.change_grade(username3,course,assignment,100)
     assert grading_system.users[username3]['courses'][course][assignment]['grade'] == 100
 
-#(4) test staff assignment creation
+#(4) test staff assignment creation, pass
 def test_create_assignment(grading_system):
     grading_system.login(username,password)
     grading_system.usr.create_assignment('testAssignment', "11/11/20",course)
@@ -45,14 +45,36 @@ def test_create_assignment(grading_system):
     f.close()
     assert -1 != courses_doc.rfind('"cloud_computing": {"assignments": {"assignment1": {"due_date": "1/3/20"}, "assignment2": {"due_date": "2/3/20"}, "testAssignment": {"due_date": "11/11/20"}}')
     
-#(5) test add student by professor
-#def test_add_student(grading_system):
+#(5) test add student by professor, fail
+def test_add_student(grading_system):
+    grading_system.login(profUser,profPass)
+    grading_system.usr.add_student(username,"comp_sci")
+    f = open('Data/users.json', "r") #read the json to see if the method correctly added class
+    users_doc = f.readline()
+    f.close()
+    assert -1 != users_doc.rfind('"yted91": {"courses": {"cloud_computing": {"assignment1": {"grade": 0, "submission_date": "1/7/20", "submission": "Blah Blah Blah", "ontime": false}, "assignment2": {"Grade": 5, "Submission Data": "2/7/20", "Submission": "Blah2 Blah2 Blah2", "ontime": false}}, "software_engineering": {"assignment1": {"grade": 43, "submission_date": "1/5/20", "submission": "Blah Blah Blah", "ontime": false}, "assignment2": {"grade": 22, "submission_date": "2/5/20", "submission": "Blah2 Blah2 Blah2", "ontime": false}},"comp_sci"')
 
-#(6) test drop student by professor
 
-#(7) test submit assignment for student
+#(6) test drop student by professor, pass
+def test_drop_student(grading_system):
+    grading_system.login(username,password)
+    grading_system.usr.drop_student(username3,course)
+    f = open('Data/users.json', "r") #read the json to see if the method correctly dropped student
+    users_doc = f.readline()
+    f.close()
+    assert -1 != users_doc.rfind('"yted91": {"courses": {"software_engineering": {"assignment1": {"grade": 43, "submission_date": "1/5/20", "submission": "Blah Blah Blah", "ontime": false}, "assignment2": {"grade": 22, "submission_date": "2/5/20", "submission": "Blah2 Blah2 Blah2", "ontime": false}}}, "password": "imoutofpasswordnames"')
 
-#(8) test check if assignment is on time for student
+#(7) test submit assignment for student, fail
+def test_student_submit_assignment(grading_system):
+    grading_system.login(username3,password3)
+    grading_system.usr.submit_assignment(course,'assignment1','hi','12/12/20')
+
+#(8) test check if assignment is on time for student, fail
+def test_student_on_time(grading_system):
+    grading_system.login(username3,password3)
+    assert False == grading_system.usr.check_ontime("1/1/1999","1/1/2000")
+    assert True == grading_system.usr.check_ontime("1/1/2000","1/1/1999")
+    assert True == grading_system.usr.check_ontime("1/1/2000","1/1/2000")
 
 #(9) test check grades for student, fail 
 def test_check_grade(grading_system):
