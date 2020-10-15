@@ -83,17 +83,39 @@ def test_check_grade(grading_system):
     assert ['assignment2',5] in grades #done this way so that order doesnt matter
     assert ['assignment1',0] in grades 
 
-#(10) test view assignments for student
+#(10) test view assignments for student, pass
+def test_view_assignments_student(grading_system):
+    grading_system.login(username3,password3)
+    assert [['assignment1', '2/2/20'], ['assignment2', '2/10/20']] == grading_system.usr.view_assignments(course)
+    
+#(11) test if the student can message the professor, fail
+def test_student_message_prof(grading_system):
+    grading_system.login(username3,password3)
+    grading_system.usr.msg_prof("calyam","yo extension plz?")
 
-#(11) test ability for student to directly message professor
+#(12) test if the student can change all their grades to one value, fail
+def test_student_change_grade(grading_system):
+    grading_system.login(username3,password3)
+    grading_system.usr.change_all_grades(105)
+    grades = grading_system.usr.check_grades(course)
+    assert ['assignment2',5] not in grades 
+    assert ['assignment1',0] not in grades 
+    assert ['assignment1',105] in grades 
 
-#(12) test for student ability to drop a class
+#(13) test if the student can drop a class, fail
+def test_student_drop_course(grading_system):
+    grading_system.login(username3,password3)
+    grading_system.usr.drop_class(course)
 
-#(13) test for staff ability to email professor
+#(14) test for student ability to delete submission, fail
+def test_student_delete_submission(grading_system):
+    grading_system.login(username3,password3)
+    grading_system.usr.delete_submission(course,'testAssignment','hi')
 
-#(14) test for student ability to delete submission
-
-#(15) test for student ability to comment on submission
+#(15) test for student ability to comment on assignment, fail
+def test_student_comment_submission(grading_system):
+    grading_system.login(username3,password3)
+    grading_system.usr.comment_on_assignment(course,assignment,'this assignment was far too difficult')
 
 @pytest.fixture
 def grading_system():
