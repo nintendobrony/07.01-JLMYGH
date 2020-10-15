@@ -1,5 +1,6 @@
 import pytest
 import System
+import json
 
 username = 'calyam'
 password =  '#yeet'
@@ -11,7 +12,7 @@ assignment = 'assignment1'
 profUser = 'goggins'
 profPass = 'augurrox'
 
-#(1) Tests if the program can handle a successful login
+#(1) Tests if the program can handle a successful login, pass
 def test_login(grading_system):
     grading_system.login(username,password)
     if grading_system.usr.name != 'calyam':
@@ -36,8 +37,16 @@ def test_change_grade(grading_system):
     assert grading_system.users[username3]['courses'][course][assignment]['grade'] == 100
 
 #(4) test staff assignment creation
-
+def test_create_assignment(grading_system):
+    grading_system.login(username,password)
+    grading_system.usr.create_assignment('testAssignment', "11/11/20",course)
+    f = open('Data/courses.json', "r") #read the json to see if the method correctly added assignment
+    courses_doc = f.readline()
+    f.close()
+    assert -1 != courses_doc.rfind('"cloud_computing": {"assignments": {"assignment1": {"due_date": "1/3/20"}, "assignment2": {"due_date": "2/3/20"}, "testAssignment": {"due_date": "11/11/20"}}')
+    
 #(5) test add student by professor
+#def test_add_student(grading_system):
 
 #(6) test drop student by professor
 
@@ -45,14 +54,12 @@ def test_change_grade(grading_system):
 
 #(8) test check if assignment is on time for student
 
-#(9) test check grades for student, fail
+#(9) test check grades for student, fail 
 def test_check_grade(grading_system):
     grading_system.login(username3,password3)
     grades = grading_system.usr.check_grades(course)
-    if 5 not in grades: #done this way so that order doesnt matter
-        assert False
-    if 3 not in grades:
-        assert False
+    assert ['assignment2',5] in grades #done this way so that order doesnt matter
+    assert ['assignment1',0] in grades 
 
 #(10) test view assignments for student
 
